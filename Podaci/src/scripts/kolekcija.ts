@@ -1,10 +1,11 @@
 import { MilvusClient, DataType } from "@zilliz/milvus2-sdk-node";
+import {milvusClient, createCollection} from "../database/schema/shemamilvus.ts"
 
 // kreira test1 kolekciju i ubacuje neke podatke u nju 
 (async () => {
   try {
     // 1. Povezivanje
-    const milvusClient = new MilvusClient({ address: "127.0.0.1:19530" });
+    //const milvusClient = new MilvusClient({ address: "127.0.0.1:19530" });
 
     let attempts = 0;
     while (milvusClient.connectStatus !== 1 && attempts < 10) {
@@ -19,6 +20,7 @@ import { MilvusClient, DataType } from "@zilliz/milvus2-sdk-node";
     console.log("Connected to Milvus!");
 
     // 2. Kreiranje kolekcije
+    /*
     const collectionName = "test1";
     const createCollection = await milvusClient.createCollection({
       collection_name: collectionName,
@@ -43,8 +45,11 @@ import { MilvusClient, DataType } from "@zilliz/milvus2-sdk-node";
           max_length: 128,
         },
       ],
-    });
-    console.log("Collection created:", createCollection);
+    });*/
+    await milvusClient.use({ db_name: "my_db" });
+    const collectionName = "test2";
+    const collectionRes = await createCollection(collectionName);
+    console.log("Collection created:", collectionRes);
 
     // 3. Ubacivanje podataka
     const vectorsData = [
