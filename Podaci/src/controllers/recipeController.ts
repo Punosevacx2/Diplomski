@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { db } from "../config/db.ts";
+import { db } from "../config/db.js";
 import { recipes } from "../database/schema/schemapg.ts";
 import { eq } from "drizzle-orm";
 import express from "express";
