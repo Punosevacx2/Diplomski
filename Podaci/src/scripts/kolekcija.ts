@@ -1,5 +1,6 @@
 import { MilvusClient, DataType } from "@zilliz/milvus2-sdk-node";
 
+// kreira test1 kolekciju i ubacuje neke podatke u nju 
 (async () => {
   try {
     // 1. Povezivanje

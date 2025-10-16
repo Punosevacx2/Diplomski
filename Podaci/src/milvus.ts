@@ -1,5 +1,6 @@
 import { MilvusClient, DataType } from "@zilliz/milvus2-sdk-node";
 
+//kreiranje i ubacivanje podataka u kolekciju
 (async () => {
   try {
     const milvusClient = new MilvusClient({ address: "127.0.0.1:19530" });

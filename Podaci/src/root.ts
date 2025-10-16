@@ -1,4 +1,5 @@
 import { MilvusClient , DataType} from '@zilliz/milvus2-sdk-node';
+// ne sluzi nicemu moze da se obrise
 
 (async () => {
   try {

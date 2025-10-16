@@ -5,6 +5,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { recipes } from "./database/schema/schemapg.ts"; 
 
 dotenv.config();
+//popunjavanje postgresql baze 
 
 // Seed datas in PostgreSQL database
 const API_KEY = process.env.SPOONACULAR_API_KEY;

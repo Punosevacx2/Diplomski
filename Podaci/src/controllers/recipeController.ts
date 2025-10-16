@@ -4,6 +4,7 @@ import { recipes } from "../database/schema/schemapg.ts";
 import { eq } from "drizzle-orm";
 import express from "express";
 
+// funkcije koje rade sa postgresql bazom 
 export const getAllRecipes = async (_req: Request, res: Response) => {
   try {
     const all = await db.select().from(recipes);
