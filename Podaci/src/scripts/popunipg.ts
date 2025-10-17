@@ -2,7 +2,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { Client } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { recipes } from "./database/schema/schemapg.ts"; 
+import { recipes } from "../database/schema/schemapg.ts"; 
 
 dotenv.config();
 //popunjavanje postgresql baze 
@@ -36,7 +36,7 @@ async function getRecipesBatch(offset: number, number: number = 100) {
 
     return response.data.results.map((r: any) => ({
       title: r.title || "No title",
-      description: stripHtmlTags(r.summary) || "No description",
+      description: stripHtmlTags(r.summary) || "No description", //funkcija koja cisti text od html tagova
       ingredients: r.extendedIngredients
         ? r.extendedIngredients.map((ing: any) => ing.original).join(", ")
         : "",

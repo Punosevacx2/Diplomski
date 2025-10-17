@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { getAllRecipes, addRecipe, getRecipeById } from "../controllers/recipeController.ts";
+import { RecipeService } from '../services/recipeService.ts';
 
 const router = Router();
 //ruta za postgresql bazu 
-router.get("/", getAllRecipes);
-router.get("/:id", getRecipeById);
-router.post("/", addRecipe);
+// src/routes/recipes.ts
+
+router.get('/', async (_, res) => res.json(await RecipeService.getAllRecipes()));
+router.get('/:id', async (req, res) => res.json(await RecipeService.getRecipeById(Number(req.params.id))));
+router.post('/', async (req, res) => res.json(await RecipeService.createRecipe(req.body)));
+router.put('/:id', async (req, res) => res.json(await RecipeService.updateRecipe(Number(req.params.id), req.body)));
+router.delete('/:id', async (req, res) => res.json(await RecipeService.deleteRecipe(Number(req.params.id))));
 
 export default router;

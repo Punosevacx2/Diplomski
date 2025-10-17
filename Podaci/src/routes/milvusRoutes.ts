@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createMilvusCollection } from '../controllers/milvusController';
+import { createMilvusCollection } from '../controllers/milvusController.ts';
 
 const router = Router();
 // ruta za milvus
