@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import recipeRoutes from "./routes/recipeRoutes.ts";
-import milvusRoutes from "./routes/milvusRoutes.ts"
+import milvusRoutes from "./routes/milvusRoutes.ts";
+import collectionRoutes from "./routes/collectionRoutes.ts";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ console.log("Server je pokrenut");
 // Registrujemo rute
 app.use("/api/recipes", recipeRoutes);
 app.use('/api/milvus', milvusRoutes);
+app.use('app/collections', collectionRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

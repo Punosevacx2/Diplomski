@@ -1,8 +1,16 @@
-import { Router } from 'express';
-import { createMilvusCollection } from '../controllers/milvusController.ts';
+import { Router } from "express";
+import {
+  createMilvusCollection,
+  insertVector,
+  searchVectors,
+  deleteVector,
+} from "../controllers/milvusController.ts";
 
 const router = Router();
-// ruta za milvus
-router.post('/create', createMilvusCollection);
+
+router.post("/collection", createMilvusCollection);
+router.post("/insert", insertVector);
+router.post("/search", searchVectors);
+router.delete("/delete/:id", deleteVector);
 
 export default router;
