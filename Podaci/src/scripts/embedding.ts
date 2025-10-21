@@ -83,11 +83,11 @@ async function main() {
 
 async function main1() {
   const results = await searchVectors(
-    "fasting recipes",  // tekst koji tražiš
+    "fast recepis with rise",  // tekst koji tražiš
     collectionName,             // kolekcija u Milvusu
     5,                                // broj rezultata
-    "L2",                             // metrika
-    { nprobe: 10 }                    // parametri pretrage
+    "COSINE",                             // metrika
+    { nprobe: 128 }                    // parametri pretrage
   );
 
   console.log("Rezultati:", JSON.stringify(results.results, null, 2));
