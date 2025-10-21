@@ -24,7 +24,7 @@ import { MilvusClient , DataType} from '@zilliz/milvus2-sdk-node';
     console.log('Using database:', useDb);
 
      const create = await milvusClient.createCollection({
-    collection_name: 'sample_collection',
+    collection_name: 'test4',
     fields: [
       {
         name: 'age',
@@ -106,7 +106,7 @@ import { MilvusClient , DataType} from '@zilliz/milvus2-sdk-node';
   ];
   // Insert objekat (nije potreban tip InsertReq)
     const insertParams = {
-      collection_name: 'sample_collection',
+      collection_name: 'test4',
       fields_data: vectorsData,
     };
 

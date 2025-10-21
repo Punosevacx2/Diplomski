@@ -17,6 +17,7 @@ export const createMilvusCollection = async (req: Request, res: Response) => {
 // Ubaci vektor u kolekciju
 export const insertVector = async (req: Request, res: Response) => {
   try {
+    //vector ne treba iz body nego da se pravi ovde 
     const { id, vector, name } = req.body;
     const result = await milvusClient.insert({
       collection_name: collectionName,
@@ -33,6 +34,7 @@ export const insertVector = async (req: Request, res: Response) => {
 export const searchVectors = async (req: Request, res: Response) => {
   try {
     const { vector, topK = 5 } = req.body;
+    // Ovde ne treba vector u body nego da ga na osnovu teksta generisem 
     const result = await milvusClient.search({
       collection_name: collectionName,
       vectors: [vector],
