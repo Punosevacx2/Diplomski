@@ -16,7 +16,7 @@ console.log("Server je pokrenut");
 // Registrujemo rute
 app.use("/api/recipes", recipeRoutes);
 app.use('/api/milvus', milvusRoutes);
-app.use('app/collections', collectionRoutes);
+app.use('/app/collections', collectionRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

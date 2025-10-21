@@ -1,6 +1,9 @@
 import type { Request, Response } from 'express';
 import { milvusClient, collectionName,createCollection } from '../database/schema/shemamilvus.ts';
+import { getLocalEmbedding } from "../embedding/localEmbedding.ts";
 
+
+// collectionName mi je u shemamilvus.ts
 
 // Kreiraj kolekciju
 export const createMilvusCollection = async (req: Request, res: Response) => {
@@ -30,28 +33,37 @@ export const insertVector = async (req: Request, res: Response) => {
   }
 };
 
-// Pretraga vektora
+
 export const searchVectors = async (req: Request, res: Response) => {
   try {
-    const { vector, topK = 5 } = req.body;
-    // Ovde ne treba vector u body nego da ga na osnovu teksta generisem 
+    const { text, topK = 5, collectionName , metricType = "L2", indexParams = { nprobe: 10 } } = req.body;
+    if (!text) {
+      return res.status(400).json({ message: "Text is required in the body" });
+    }
+
+    // Generiši embedding iz teksta
+    const vector = await getLocalEmbedding(text);
+
+    // Pretraži Milvus kolekciju
     const result = await milvusClient.search({
       collection_name: collectionName,
-      vectors: [vector],
+      vectors: [vector], //embeding kad se napravi 
       search_params: {
         anns_field: "vector",
         topk: topK,
-        metric_type: "L2",  // Indeks koji imam u bazi 
-        params: JSON.stringify({ nprobe: 10 }),
+        metric_type: metricType,  // L2, IP, COSINE itd.
+        params: JSON.stringify(indexParams),
       },
       output_fields: ["name", "id"],
     });
+
     res.json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Milvus search error" });
   }
 };
+
 
 // Brisanje vektora
 export const deleteVector = async (req: Request, res: Response) => {
