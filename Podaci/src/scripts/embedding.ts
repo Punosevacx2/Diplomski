@@ -72,18 +72,18 @@ export async function searchVectors(
 
 async function main() {
   await createMilvusIndex(
-    collectionName, // ime tvoje kolekcije u Milvusu
+    collectionName,       // ime tvoje kolekcije u Milvusu
     "vector",             // polje nad kojim praviš indeks
     "vector_index",       // ime indeksa
     "IVF_FLAT",           // tip indeksa
-    "COSINE",                 // metrika (L2, IP, COSINE)
+    "COSINE",             // metrika (L2, IP, COSINE)
     { nlist: 128 }        // dodatni parametri
   );
 }
 
 async function main1() {
   const results = await searchVectors(
-    "fast recepis with rise",  // tekst koji tražiš
+    "recipe without sugar",  // tekst koji tražiš
     collectionName,             // kolekcija u Milvusu
     5,                                // broj rezultata
     "COSINE",                             // metrika
@@ -93,7 +93,7 @@ async function main1() {
   console.log("Rezultati:", JSON.stringify(results.results, null, 2));
 }
 
-main().catch(console.error);
+//main().catch(console.error);
 
 main1().catch(console.error);
 
