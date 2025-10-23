@@ -8,16 +8,7 @@ import { recipes } from '../database/schema/schemapg.ts';
 
 dotenv.config();
 
-const API_KEY = process.env.SPOONACULAR_API_KEY;
-const BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
-
-function stripHtmlTags(text: string) {
-  return text.replace(/<[^>]*>/g, '');
-}
-
-
-
-export async function seedFromPostgres() {
+export async function seedFromPostgres(collectionN : string) {
   // Konektuj se na PostgreSQL
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -36,9 +27,9 @@ export async function seedFromPostgres() {
 
     // Ubaci u Milvus
     await milvusClient.insert({
-      collection_name: collectionName,
+      collection_name: collectionN,
       fields_data: [
-        {                 // ako autoID: true, možeš i da preskočiš id
+        {                 
           title: recipe.title,
           description: recipe.description,
           vector,
@@ -51,7 +42,7 @@ export async function seedFromPostgres() {
   await client.end();
 }
 createCollection(collectionName);
-seedFromPostgres().catch((err) => {
+seedFromPostgres(collectionName).catch((err) => {
   console.error(err);
   process.exit(1);
 });

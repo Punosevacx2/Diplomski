@@ -27,3 +27,5 @@ const exists = await milvusClient.hasCollection({ collection_name: collectionNam
   });
   return createRes;
 }
+
+

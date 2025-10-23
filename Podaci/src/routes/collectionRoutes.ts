@@ -4,6 +4,8 @@ import { milvusClient } from '../database/schema/shemamilvus.ts';
 
 const router = Router();
 
+// VISE NIJE POTREBNA U shemamilvus.ts IMAM ISTU FUNKCIJU   
+/*
 router.post('/:collectionName/index', async (req: Request, res: Response) => {
   const { collectionName } = req.params;
   const { fieldName, indexName, indexType, metricType, params } = req.body;
@@ -15,7 +17,7 @@ router.post('/:collectionName/index', async (req: Request, res: Response) => {
       index_name: indexName,        
       index_type: indexType,        //  "IVF_FLAT"
       metric_type: metricType,      //  "L2"
-      params: params || { nlist: 128 },
+      params: params || { nlist: 1024 },
     });
 
     /*
@@ -35,7 +37,7 @@ router.post('/:collectionName/index', async (req: Request, res: Response) => {
             IP – Inner Product
             COSINE – Cosine similarity
         
-    */
+    
 
     res.json({ message: 'Index created', result });
   } catch (err) {
@@ -44,4 +46,4 @@ router.post('/:collectionName/index', async (req: Request, res: Response) => {
   }
 });
 
-export default router;
+export default router;*/

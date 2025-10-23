@@ -8,7 +8,7 @@ export async function createMilvusIndex(
   indexName: string,
   indexType: string,
   metricType: string,
-  params: object = { nlist: 128 }
+  params: object = { nlist: 1024 }
 ) {
   try {
     const result = await milvusClient.createIndex({
