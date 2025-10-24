@@ -1,8 +1,0 @@
-<div *ngIf="loading">Loading recipes...</div>
-<div *ngIf="error">{{ error }}</div>
-
-<ul *ngIf="!loading && !error">
-  <li *ngFor="let recipe of recipes">
-    <strong>{{ recipe.name }}</strong> - {{ recipe.description }}
-  </li>
-</ul>

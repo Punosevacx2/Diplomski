@@ -41,6 +41,7 @@ export async function seedFromPostgres(collectionN : string) {
   console.log('Svi recepti ubačeni u Milvus!');
   await client.end();
 }
+
 createCollection(collectionName);
 seedFromPostgres(collectionName).catch((err) => {
   console.error(err);
