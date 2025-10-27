@@ -17,7 +17,7 @@ export class SearchComponent {
   results: any[] = [];
   loading = false;
   error: string | null = null;
-  collectionName = 'Proba1'; // 🔧 promeni prema tvojoj kolekciji
+  collectionName = 'Proba1'; 
 
   constructor(private milvusService: MilvusService, private router: Router) {}
 
@@ -31,7 +31,7 @@ export class SearchComponent {
   text: this.query,
   topK:  5,
   collectionName: this.collectionName,
-  metricType: "L2",
+  metricType: "COSINE",
   indexParams:   { nprobe: 128 }
 };
 console.log(data1);
@@ -73,8 +73,9 @@ console.log(data1);
   }
 
   openRecipeDetail(recipe: any): void {
+    console.log(recipe.id);
     if (recipe.id) {
-      this.router.navigate(['/recipe', recipe.id]);
+      this.router.navigate(['/recipe/', recipe.id]);
     }
   }
 }

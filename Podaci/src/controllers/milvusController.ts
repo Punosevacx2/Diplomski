@@ -53,9 +53,9 @@ export const searchVectors = async (req: Request, res: Response) => {
         metric_type: metricType,  // L2, IP, COSINE itd.
         params: JSON.stringify(indexParams),
       },
-      output_fields: ["title", "description"],  
+      output_fields: ["title", "description","id"],  
     });
-
+    console.log(result);
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -78,7 +78,7 @@ export const searchVectorshybrid = async (req: Request, res: Response) => {
   collection_name: collectionName,
   vector: vector,
   filter: filter,  // ⬅️ scalar filter deo
-  output_fields: ["title", "description"],  
+  output_fields: ["title", "description",],  
   metric_type: metricType,       // polja koja želiš da dobiješ
   limit: topK,                                       // broj rezultata
   params: { nprobe: 128 },                         // parametri pretrage
@@ -226,4 +226,28 @@ export const dropCollection = async(req: Request, res: Response)=> {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
+}
+
+export async function searchByIdRoute(req: Request, res: Response) {
+  try {
+    const { id, collectionName } = req.body;
+    if (!id || !collectionName) {
+      return res.status(400).json({ error: "Nedostaje id ili collectionName" });
+    }
+
+    // Logika je u funkciji
+    const result = await searchById(id, collectionName);
+    res.json({ data: result.data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Greška u pretrazi po ID-u" });
+  }
+}
+
+export async function searchById(id: number, collectionName: string) {
+  return milvusClient.query({
+    collection_name: collectionName,
+    expr: `id in [${id}]`,
+    output_fields: ["id", "title", "description"]
+  });
 }

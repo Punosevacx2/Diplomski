@@ -1,8 +1,8 @@
-<div *ngIf="!loading && recipe">
+<div >
   <h2>{{ recipe.title }}</h2>
   <p>{{ recipe.description }}</p>
   <p>ID: {{ recipe.id }}</p>
-  <a routerLink="/">⬅️ Nazad</a>
+  <a routerLink="/search">⬅️ Nazad</a>
 </div>
 
 <div *ngIf="loading">⏳ Učitavanje...</div>

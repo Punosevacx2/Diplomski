@@ -14,12 +14,12 @@ export class MilvusService {
 
   // 🏗️ 1. Kreiraj kolekciju
   createCollection(name: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/createCollection`, { name });
+    return this.http.post(`${this.baseUrl}/collection`, { name });
   }
 
   // 📥 2. Ubaci vektor
   insertVector(data: { id: number; title: string; description: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/insertVector`, data);
+    return this.http.post(`${this.baseUrl}/insert`, data);
   }
 
   // 🔍 3. Semantička pretraga
@@ -43,17 +43,17 @@ export class MilvusService {
     indexParams?: any;
     filter?: string;
   }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/searchVectorsHybrid`, body);
+    return this.http.post(`${this.baseUrl}/hybrid-search`, body);
   }
 
   // 🧮 5. Query filter
   queryFilter(body: { collectionName: string; filter?: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/queryFilter`, body);
+    return this.http.post(`${this.baseUrl}/query`, body);
   }
 
   // 🗑️ 6. Brisanje vektora po ID-u
   deleteVector(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deleteVector/${id}`);
+    return this.http.delete(`${this.baseUrl}/delete/${id}`);
   }
 
   // 🧱 7. Kreiraj indeks
@@ -64,31 +64,42 @@ export class MilvusService {
     metricType?: string;
     indexType?: string;
   }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/createIndex`, body);
+    return this.http.post(`${this.baseUrl}/index`, body);
   }
 
   // 📋 8. Lista indeksa
   listIndexes(body: { collectionName: string; fieldName: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/listIndexes`, body);
+    return this.http.post(`${this.baseUrl}/indexes`, body);
   }
 
   // 🗑️ 9. Brisanje indeksa
   dropIndex(body: { collectionName: string; indexName: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/dropIndex`, body);
+    return this.http.post(`${this.baseUrl}/index`, body);
   }
 
   // 📚 10. Lista kolekcija
   listCollections(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/listCollections`);
+    return this.http.get(`${this.baseUrl}/collections`);
   }
 
   // 🔍 11. Detalji kolekcije
   describeCollection(name: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/describeCollection/${name}`);
+    return this.http.get(`${this.baseUrl}/collection/${name}`);
   }
 
   // 🗑️ 12. Brisanje kolekcije
   dropCollection(name: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/dropCollection/${name}`);
+    return this.http.delete(`${this.baseUrl}/collection/${name}`);
   }
+
+searchById(id: number): Observable<any> {
+  const body = {
+    id,
+    collectionName: 'Proba1'
+  };
+
+  return this.http.post(`${this.baseUrl}/getById`, body);
+}
+
+
 }

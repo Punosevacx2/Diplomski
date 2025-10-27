@@ -9,5 +9,13 @@
   <div *ngFor="let r of results" class="recipe-card" (click)="openRecipeDetail(r)">
     <h3>{{ r.title }}</h3>
     <p>{{ r.description }}</p>
+
+    <!-- Score prikaz -->
+    <div *ngIf="r.score !== undefined" class="score-container">
+      <span>{{ (r.score * 100) | number:'1.0-0' }}%</span>
+      <div class="score-bar">
+        <div class="score-fill" [style.width.%]="r.score * 100"></div>
+      </div>
+    </div>
   </div>
 </div>

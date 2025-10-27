@@ -11,7 +11,8 @@ import {
   searchVectorshybrid,
   queryFilterRoute,
   dropMilvusIndex,
-  listMilvusIndexes
+  listMilvusIndexes,
+  searchByIdRoute
 } from "../controllers/milvusController.ts";
 
 const router = Router();
@@ -19,6 +20,7 @@ const router = Router();
 
 router.post("/insert", insertVector);
 router.post("/search", searchVectors);
+router.post("/getById", searchByIdRoute);
 router.post("/query", queryFilterRoute);
 router.post("/hybrid-search",searchVectorshybrid);
 router.delete("/delete/:id", deleteVector);
@@ -26,7 +28,7 @@ router.delete("/delete/:id", deleteVector);
 router.post("/collection", createMilvusCollection);
 router.get("/collections", listCollections);
 router.get("/collections/:name", describeCollection);
-router.delete("/collections/:name", dropCollection);
+router.delete("/collection/:name", dropCollection);
 
 router.post("/index",createMilvusIndex );
 router.delete("/index",dropMilvusIndex);
