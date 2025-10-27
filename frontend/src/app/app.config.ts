@@ -3,10 +3,20 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 
-export const appConfig: ApplicationConfig = {
+import { importProvidersFrom } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { HomeComponent } from './component/home.component/home.component';
+import { SearchComponent } from './component/search.component/search.component';
+import { RecipeDetailComponent } from './component/recipe-detail.component/recipe-detail.component';
+
+export const appConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes)
+    importProvidersFrom(HttpClientModule), // za HTTP servise
+    provideRouter([
+      { path: '', component: HomeComponent },
+      { path: 'search', component: SearchComponent },
+      { path: 'recipe/:id', component: RecipeDetailComponent }
+    ])
   ]
 };

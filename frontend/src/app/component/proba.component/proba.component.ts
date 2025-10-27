@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal  } from '@angular/core';
 
 @Component({
   selector: 'app-proba',
@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './proba.component.scss',
 })
 export class ProbaComponent {
-
+ title=signal('Milos');
 }

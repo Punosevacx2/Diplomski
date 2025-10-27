@@ -1,0 +1,13 @@
+<div class="search-container">
+  <input type="text" [(ngModel)]="query" placeholder="Unesi recept..." />
+  <button (click)="onSemanticSearch()">Semantička</button>
+  <button (click)="onHybridSearch()">Hibridna</button>
+
+  <div *ngIf="loading">⏳ Učitavanje...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngFor="let r of results" class="recipe-card" (click)="openRecipeDetail(r)">
+    <h3>{{ r.title }}</h3>
+    <p>{{ r.description }}</p>
+  </div>
+</div>

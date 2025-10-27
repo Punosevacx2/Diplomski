@@ -1,15 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {ProbaComponent} from './component/proba.component/proba.component';
-
+import { NavbarComponent } from './component/navbar.component/navbar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet,ProbaComponent],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrls: ['./app.scss']
 })
-export class App {
-  protected readonly title = signal('frontend');
+export class AppComponent {
+  title = 'Recipe Search App';
 }

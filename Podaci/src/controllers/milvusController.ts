@@ -34,6 +34,7 @@ export const insertVector = async (req: Request, res: Response) => {
 
 export const searchVectors = async (req: Request, res: Response) => {
   try {
+    console.log("Pozvan je endpoint searchVector");
     const { text, topK = 5, collectionName , metricType = "L2", indexParams = { nprobe: 128 } } = req.body;
     if (!text) {
       return res.status(400).json({ message: "Text is required in the body" });
@@ -153,7 +154,7 @@ export  const createMilvusIndex = async (req: Request, res: Response) =>  {
 export const listMilvusIndexes = async (req: Request, res: Response) => {
   try {
     const { collectionName, fieldName } = req.body;
-
+    console.log("indeks1234");
     if (!collectionName || !fieldName) {
       return res.status(400).json({ message: "collectionName i fieldName su obavezni" });
     }
