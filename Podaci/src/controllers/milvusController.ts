@@ -131,6 +131,10 @@ export const deleteVector = async (req: Request, res: Response) => {
 export  const createMilvusIndex = async (req: Request, res: Response) =>  {
   try {
     const { fieldName, indexName, collectionName , metricType = "L2", indexType="IVF_FLAT" } = req.body;
+    console.log(req.body);
+
+    await milvusClient.releaseCollection({ collection_name: collectionName });
+
     const result = await milvusClient.createIndex({
       collection_name: collectionName || "Proba1",
       field_name: fieldName,
@@ -140,6 +144,8 @@ export  const createMilvusIndex = async (req: Request, res: Response) =>  {
       params: { nlist: 1024 },
       }
       );
+
+    await milvusClient.loadCollection({ collection_name: "Proba1" });
 
     console.log(`✅ Index "${indexName}" created for collection "${collectionName}"`);
 
@@ -154,7 +160,6 @@ export  const createMilvusIndex = async (req: Request, res: Response) =>  {
 export const listMilvusIndexes = async (req: Request, res: Response) => {
   try {
     const { collectionName, fieldName } = req.body;
-    console.log("indeks1234");
     if (!collectionName || !fieldName) {
       return res.status(400).json({ message: "collectionName i fieldName su obavezni" });
     }
@@ -166,6 +171,7 @@ export const listMilvusIndexes = async (req: Request, res: Response) => {
     });
 
     // result sadrži informacije o indeksu polja
+    console.log("Pozvan endpoint za listanje indeksa");
     res.json({ collection: collectionName, field: fieldName, index: result });
   } catch (err) {
     console.error("❌ Failed to list indexes:", err);
@@ -177,16 +183,21 @@ export const listMilvusIndexes = async (req: Request, res: Response) => {
 
 export const dropMilvusIndex = async (req: Request, res: Response) => {
   try {
-    const { collectionName, indexName } = req.body;
-
+    const { collectionName, indexName } = req.params;
+    console.log(collectionName+" "+indexName);
     if (!collectionName || !indexName) {
       return res.status(400).json({ message: "collectionName i indexName su obavezni" });
     }
+
+        await milvusClient.releaseCollection({ collection_name: collectionName });
+
 
     const result = await milvusClient.dropIndex({
       collection_name: collectionName,
       index_name: indexName,
     });
+
+    //await milvusClient.loadCollection({ collection_name: "Proba1" });
 
     console.log(`✅ Index "${indexName}" deleted from collection "${collectionName}"`);
     res.json({ message: `Index "${indexName}" deleted successfully`, result });

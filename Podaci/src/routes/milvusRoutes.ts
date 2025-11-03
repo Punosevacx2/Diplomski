@@ -31,7 +31,7 @@ router.get("/collections/:name", describeCollection);
 router.delete("/collection/:name", dropCollection);
 
 router.post("/index",createMilvusIndex );
-router.delete("/index",dropMilvusIndex);
+router.delete("/index/:collectionName/:indexName",dropMilvusIndex);
 router.post("/indexes", listMilvusIndexes);
 
 

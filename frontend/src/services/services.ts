@@ -64,6 +64,7 @@ export class MilvusService {
     metricType?: string;
     indexType?: string;
   }): Observable<any> {
+    console.log(body);
     return this.http.post(`${this.baseUrl}/index`, body);
   }
 
@@ -75,8 +76,8 @@ export class MilvusService {
   }
 
   // 🗑️ 9. Brisanje indeksa
-  dropIndex(body: { collectionName: string; indexName: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/index`, body);
+  dropIndex( collectionName: string, indexName: string ): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/index/${collectionName}/${indexName}`);
   }
 
   // 📚 10. Lista kolekcija

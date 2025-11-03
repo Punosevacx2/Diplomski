@@ -70,7 +70,7 @@ export class IndexComponent implements OnInit {
 
     this.milvusService.listIndexes(this.listParams).subscribe({
       next: (res) => {
-        console.log(res.index.index_descriptions[0].index_name);
+        //console.log(res.index.index_descriptions[0].index_name);
         this.indexes = res.index.index_descriptions[0].index_name || [];
         this.loading = false;
       },
@@ -83,23 +83,31 @@ export class IndexComponent implements OnInit {
   }
 
   // 3️⃣ Brisanje indeksa
-  onDropIndex(): void {
-    this.loading = true;
-    this.error = null;
-    this.message = null;
-
-    this.milvusService.dropIndex(this.dropParams).subscribe({
-      next: (res) => {
-        this.message = '✅ Index obrisan!';
-        this.loading = false;
-        // opcionalno: refresh liste indeksa
-        this.onListIndexes();
-      },
-      error: (err) => {
-        this.error = '❌ Greška pri brisanju indeksa';
-        console.error(err);
-        this.loading = false;
-      }
-    });
+ onDropIndex(): void {
+  if (!this.dropParams.collectionName || !this.dropParams.indexName) {
+    this.error = "⚠️ Unesite naziv kolekcije i indeksa!";
+    return;
   }
+
+  this.loading = true;
+  this.error = null;
+  this.message = null;
+
+  console.log(`🗑️ Brisanje indeksa: ${this.dropParams.indexName} iz kolekcije ${this.dropParams.collectionName}`);
+
+  this.milvusService.dropIndex(this.dropParams.collectionName, this.dropParams.indexName).subscribe({
+    next: (res) => {
+      this.message = `✅ Indeks "${this.dropParams.indexName}" uspešno obrisan!`;
+      this.loading = false;
+
+      // opcionalno: osveži listu indeksa nakon brisanja
+      this.onListIndexes?.();
+    },
+    error: (err) => {
+      this.error = '❌ Greška pri brisanju indeksa.';
+      console.error(err);
+      this.loading = false;
+    }
+  });
+}
 }

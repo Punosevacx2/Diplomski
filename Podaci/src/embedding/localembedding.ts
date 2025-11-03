@@ -15,3 +15,6 @@ export async function getLocalEmbedding(text: string): Promise<number[]> {
   return Array.from(output.data);
 }
 
+
+
+
