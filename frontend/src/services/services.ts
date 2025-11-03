@@ -69,7 +69,9 @@ export class MilvusService {
 
   // 📋 8. Lista indeksa
   listIndexes(body: { collectionName: string; fieldName: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/indexes`, body);
+    const res=this.http.post(`${this.baseUrl}/indexes`, body);
+    console.log(res);
+    return res;
   }
 
   // 🗑️ 9. Brisanje indeksa

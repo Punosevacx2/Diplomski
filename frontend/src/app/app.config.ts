@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './component/home.component/home.component';
 import { SearchComponent } from './component/search.component/search.component';
 import { RecipeDetailComponent } from './component/recipe-detail.component/recipe-detail.component';
+import { IndexComponent } from './component/index.component/index.component';
 
 export const appConfig = {
   providers: [
@@ -16,7 +17,8 @@ export const appConfig = {
     provideRouter([
       { path: '', component: HomeComponent },
       { path: 'search', component: SearchComponent },
-      { path: 'recipe/:id', component: RecipeDetailComponent }
+      { path: 'recipe/:id', component: RecipeDetailComponent },
+      { path: 'index', component: IndexComponent }
     ])
   ]
 };

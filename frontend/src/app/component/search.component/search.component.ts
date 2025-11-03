@@ -13,69 +13,67 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
-  query = '';
-  results: any[] = [];
   loading = false;
   error: string | null = null;
-  collectionName = 'Proba1'; 
+  results: any[] = [];
 
-  constructor(private milvusService: MilvusService, private router: Router) {}
+  // Parametri koje korisnik može menjati
+  params = {
+    text: '',
+    topK: 5,
+    collectionName: 'Proba1',
+    metricType: 'COSINE'
+  };
 
-  onSemanticSearch(): void {
-    if (!this.query.trim()) return;
-    console.log(this.query);
-    this.loading = true;
-    this.error = null;
-    this.results = [];
-    const data1 = {
-  text: this.query,
-  topK:  5,
-  collectionName: this.collectionName,
-  metricType: "COSINE",
-  indexParams:   { nprobe: 128 }
-};
-console.log(data1);
-    this.milvusService.searchVectors(data1).subscribe({
-      next: (res) => {
-        this.results = res.results || res.data || [];
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('❌ Greška u semantičkoj pretrazi:', err);
-        this.error = 'Greška pri semantičkoj pretrazi.';
-        this.loading = false;
-      }
-    });
+  indexParamsInput = '{"nprobe": 128}'; // korisnik može uneti svoj JSON string
+
+  constructor(private milvusService: MilvusService,private router: Router) {}
+
+openRecipeDetail(recipe: any): void {
+  if (recipe.id) {
+    // navigacija ka ruti koja prikazuje recipes-component
+    this.router.navigate(['/recipe', recipe.id]);
   }
+}
 
-  onHybridSearch(): void {
-    if (!this.query.trim()) return;
 
-    this.loading = true;
-    this.error = null;
-    this.results = [];
-
-    this.milvusService.searchVectorsHybrid({
-      text: this.query,
-      collectionName: this.collectionName,
-      filter: 'id > 0'
-    }).subscribe({
-      next: (res) => {
-        this.results = res.results || res.data || [];
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('❌ Greška u hibridnoj pretrazi:', err);
-        this.error = 'Greška pri hibridnoj pretrazi.';
-        this.loading = false;
-      }
-    });
-  }
-
-  openRecipeDetail(recipe: any): void {
-    console.log(recipe.id);
-    if (recipe.id) {
-      this.router.navigate(['/recipe/', recipe.id]);
+  onSearch(): void {
+    if (!this.params.text.trim()) {
+      this.error = 'Unesite tekst za pretragu.';
+      return;
     }
+
+    this.loading = true;
+    this.error = null;
+    this.results = [];
+
+    let parsedIndexParams: any = {};
+    try {
+      parsedIndexParams = JSON.parse(this.indexParamsInput);
+    } catch (e) {
+      this.error = 'Neispravan JSON u Index Params polju.';
+      this.loading = false;
+      return;
+    }
+
+    const body = {
+      ...this.params,
+      indexParams: parsedIndexParams
+    };
+
+    console.log('📤 Šaljem na backend:', body);
+
+    this.milvusService.searchVectors(body).subscribe({
+      next: (res) => {
+        console.log('📥 Odgovor sa backenda:', res);
+        this.results = res.results || res.data || [];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('❌ Greška:', err);
+        this.error = 'Došlo je do greške prilikom pretrage.';
+        this.loading = false;
+      }
+    });
   }
 }
