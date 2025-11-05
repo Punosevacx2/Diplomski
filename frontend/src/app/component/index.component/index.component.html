@@ -1,7 +1,7 @@
 <div class="index-container">
   <h2>🗂️ Upravljanje indeksima</h2>
 
-  <!-- 1️⃣ Kreiranje indeksa -->
+  
   <section class="index-section">
     <h3>Kreiraj indeks</h3>
     <form (ngSubmit)="onCreateIndex()" class="index-form">
@@ -17,7 +17,7 @@
         <label>Naziv indeksa:</label>
         <input type="text" [(ngModel)]="createParams.indexName" name="createIndexName" required />
       </div>
-      <div class="form-group">
+      <div class="form-group">  
         <label>Metric type:</label>
         <select [(ngModel)]="createParams.metricType" name="createMetricType">
           <option value="L2">L2 (Euclidean)</option>
@@ -33,17 +33,17 @@
           <option value="HNSW">HNSW</option>
         </select>
       </div>
-      <button type="submit" [disabled]="loading">Kreiraj indeks</button>
+      <button type="submit" [disabled]="loadingCreate">Kreiraj indeks</button>
     </form>
-    <div *ngIf="message" class="message">{{ message }}</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
+    <div *ngIf="messageCreate" class="messageCreate">{{ messageCreate }}</div>
+    <div *ngIf="errorCreate" class="errorCreate">{{ errorCreate }}</div>
   </section>
 
   <hr />
 
-  <!-- 2️⃣ Lista indeksa -->
+  
   <section class="index-section">
-    <h3>🗂️ Provera indeksa</h3>
+    <h3>Provera indeksa</h3>
 
   <form (ngSubmit)="onListIndexes()" class="index-form">
     <label>Naziv kolekcije:</label>
@@ -52,23 +52,25 @@
     <label>Polje:</label>
     <input type="text" [(ngModel)]="listParams.fieldName" name="fieldName" required />
 
-    <button type="submit" [disabled]="loading">Proveri indeks</button>
+    <button type="submit" [disabled]="loadingList">Proveri indeks</button>
   </form>
 
-  <div *ngIf="loading">⏳ U toku...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="loadingList">⏳ U toku...</div>
+  <div *ngIf="errorList" class="errorList">{{ errorList }}</div>
+
 
   <div *ngIf="indexes">
-    ✅ Ime indeksa: <strong>{{ indexes }}</strong>
+     Ime indeksa: <strong>{{ indexes }}</strong>
+   
   </div>
-  <div *ngIf="indexes === null && !loading">
+  <div *ngIf="indexes === null && !loadingList">
     ⚠️ Indeks ne postoji za ovo polje.
   </div>
   </section>
 
   <hr />
 
-  <!-- 3️⃣ Brisanje indeksa -->
+  
   <section class="index-section">
     <h3>Obriši indeks</h3>
     <form (ngSubmit)="onDropIndex()" class="index-form">
@@ -80,7 +82,8 @@
         <label>Naziv indeksa:</label>
         <input type="text" [(ngModel)]="dropParams.indexName" name="dropIndex" required />
       </div>
-      <button type="submit" [disabled]="loading">Obriši indeks</button>
+      <button type="submit" [disabled]="loadingDrop">Obriši indeks</button>
     </form>
+    <div *ngIf="messageDrop" class="messageDrop">{{ messageDrop }}</div>
   </section>
 </div>

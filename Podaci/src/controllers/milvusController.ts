@@ -2,27 +2,16 @@ import type { Request, Response } from 'express';
 import { milvusClient, collectionName,createCollection } from '../database/schema/shemamilvus.ts';
 import { getLocalEmbedding } from "../embedding/localEmbedding.ts";
 
-// Kreiraj kolekciju
-export const createMilvusCollection = async (req: Request, res: Response) => {
-  try {
-    const { name } = req.body;
-    const result = await createCollection(name || collectionName);
-    res.json(result);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Milvus error" });
-  }
-};
 
 // Ubaci vektor u kolekciju
 export const insertVector = async (req: Request, res: Response) => {
   try {
-    const { id,description, title } = req.body;
+    const {description, title, collectionName} = req.body;
     const vector=await getLocalEmbedding(description);
 
     const result = await milvusClient.insert({
-      collection_name: collectionName,
-      fields_data: [{ id, vector, title, description}],  // polja u milvus bazi 
+      collection_name: collectionName || collectionName,
+      fields_data: [{ vector, title, description}],  // polja u milvus bazi 
     });
     res.json(result);
   } catch (err) {
@@ -30,7 +19,6 @@ export const insertVector = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Milvus insert error" });
   }
 };
-
 
 export const searchVectors = async (req: Request, res: Response) => {
   try {
@@ -43,6 +31,10 @@ export const searchVectors = async (req: Request, res: Response) => {
     // Generiši embedding iz teksta
     const vector = await getLocalEmbedding(text);
 
+    await milvusClient.loadCollection({
+  collection_name: collectionName,
+});
+    console.log(collectionName);
     // Pretraži Milvus kolekciju
     const result = await milvusClient.search({
       collection_name: collectionName,
@@ -116,9 +108,9 @@ export const queryFilterRoute = async (req: Request, res: Response) => {
 // Brisanje vektora
 export const deleteVector = async (req: Request, res: Response) => {
   try {
-      const { id } = req.params;
+      const { id, collectionName } = req.params;
       const result = await milvusClient.deleteEntities({
-      collection_name: collectionName,
+      collection_name: collectionName|| "Proba1",
       expr: `id == ${id}`,
     });
     res.json(result);
@@ -127,117 +119,6 @@ export const deleteVector = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Milvus delete error" });
   }
 };
-
-export  const createMilvusIndex = async (req: Request, res: Response) =>  {
-  try {
-    const { fieldName, indexName, collectionName , metricType = "L2", indexType="IVF_FLAT" } = req.body;
-    console.log(req.body);
-
-    await milvusClient.releaseCollection({ collection_name: collectionName });
-
-    const result = await milvusClient.createIndex({
-      collection_name: collectionName || "Proba1",
-      field_name: fieldName,
-      index_name: indexName,
-      index_type: indexType,   // npr. "IVF_FLAT"
-      metric_type: metricType, 
-      params: { nlist: 1024 },
-      }
-      );
-
-    await milvusClient.loadCollection({ collection_name: "Proba1" });
-
-    console.log(`✅ Index "${indexName}" created for collection "${collectionName}"`);
-
-    res.json(result);
-
-  } catch (err) {
-    console.error("❌ Failed to create index:", err);
-    throw err;
-  }
-}
-
-export const listMilvusIndexes = async (req: Request, res: Response) => {
-  try {
-    const { collectionName, fieldName } = req.body;
-    if (!collectionName || !fieldName) {
-      return res.status(400).json({ message: "collectionName i fieldName su obavezni" });
-    }
-
-    // Poziv Milvus SDK da dobije informacije o indeksu za polje
-    const result = await milvusClient.describeIndex({
-      collection_name: collectionName,
-      field_name: fieldName,
-    });
-
-    // result sadrži informacije o indeksu polja
-    console.log("Pozvan endpoint za listanje indeksa");
-    res.json({ collection: collectionName, field: fieldName, index: result });
-  } catch (err) {
-    console.error("❌ Failed to list indexes:", err);
-    res.status(500).json({ message: "Failed to list indexes", error: err });
-  }
-};
-
-
-
-export const dropMilvusIndex = async (req: Request, res: Response) => {
-  try {
-    const { collectionName, indexName } = req.params;
-    console.log(collectionName+" "+indexName);
-    if (!collectionName || !indexName) {
-      return res.status(400).json({ message: "collectionName i indexName su obavezni" });
-    }
-
-        await milvusClient.releaseCollection({ collection_name: collectionName });
-
-
-    const result = await milvusClient.dropIndex({
-      collection_name: collectionName,
-      index_name: indexName,
-    });
-
-    //await milvusClient.loadCollection({ collection_name: "Proba1" });
-
-    console.log(`✅ Index "${indexName}" deleted from collection "${collectionName}"`);
-    res.json({ message: `Index "${indexName}" deleted successfully`, result });
-  } catch (err) {
-    console.error("❌ Failed to delete index:", err);
-    res.status(500).json({ message: "Failed to delete index", error: err });
-  }
-};
-
-// 📋 Lista kolekcija
-export const  listCollections= async (req: Request, res: Response)=> {
-  try {
-    const result = await milvusClient.listCollections();
-    res.json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
-// 🔍 Detalji kolekcije
-export const describeCollection = async (req: Request, res: Response)=>{
-  try {
-    const name = req.params.name;
-    const result = await milvusClient.describeCollection({ collection_name: name || collectionName});
-    res.json(result);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-}
-
-// 🗑️ Brisanje kolekcije
-export const dropCollection = async(req: Request, res: Response)=> {
-  try {
-    const name = req.params.name;
-    const result = await milvusClient.dropCollection({ collection_name: name || collectionName });
-    res.json({ message: `Kolekcija '${name}' obrisana.`, result });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-}
 
 export async function searchByIdRoute(req: Request, res: Response) {
   try {

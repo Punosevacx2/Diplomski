@@ -1,23 +1,17 @@
-import { milvusClient, collectionName } from "../database/schema/shemamilvus.ts";
+import { pipeline } from "@xenova/transformers";
+import fs from "fs";
 
-const prikazMilvuse = async () => {
+async function main() {
+  console.log("🔄 Preuzimanje Xenova/e5-large-v2 modela...");
+  const model = await pipeline("feature-extraction", "Xenova/e5-large-v2");
+  
+  // Model se može sačuvati lokalno
+  const dir = "./src/models/e5-large-v2";
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  try {
-    console.log(`📦 Učitavam kolekciju: ${collectionName}...`);
-    await milvusClient.loadCollectionSync({ collection_name: collectionName });
-    console.log(`✅ Kolekcija je učitana.`);
+  // Sačuvaj tokenizer i config (primer)
+  await model.save(dir);
+  console.log(`✅ Model sačuvan u ${dir}`);
+}
 
-    const result = await milvusClient.query({
-      collection_name: collectionName,
-      output_fields: ["id", "title", "description"], // polja koja želiš
-      expr: "id>10", // ili neki filter, npr. "id < 10"
-      limit: 10, // OBAVEZNO, jer expr je prazan
-    });
-
-    console.log("🔍 Podaci iz kolekcije:", result);
-  } catch (err) {
-    console.error("❌ Greška pri prikazu:", err);
-  }
-};
-
-prikazMilvuse();
+main();

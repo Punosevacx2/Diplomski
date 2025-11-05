@@ -42,8 +42,3 @@ export async function seedFromPostgres(collectionN : string) {
   await client.end();
 }
 
-createCollection(collectionName);
-seedFromPostgres(collectionName).catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
