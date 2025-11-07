@@ -1,5 +1,8 @@
+// src/scripts/milvus_version.ts
+import "dotenv/config";
+import { milvusClient } from "../database/schema/shemamilvus.ts";
 
-import { milvusClient, collectionName , createCollection} from "../database/schema/shemamilvus.ts";
-
-const collections = await milvusClient.showCollections();
-console.log(collections);
+(async () => {
+  const v = await milvusClient.getVersion();
+  console.log("Milvus version:", v);
+})();

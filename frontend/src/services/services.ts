@@ -12,6 +12,22 @@ export class MilvusService {
 
   constructor(private http: HttpClient) {}
 
+searchSemantic(text:string){
+ return this.http.post(`${this.baseUrl}/search`, {text});
+}
+
+searchFulltext(text:string){
+ return this.http.post(`${this.baseUrl}/search`, text);
+}
+
+searchHybrid(text:string){
+ return this.http.post(`${this.baseUrl}/search`, text);
+}
+
+
+
+
+
   // 🏗️ 1. Kreiraj kolekciju
   createCollection(name: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/collection`, { name });

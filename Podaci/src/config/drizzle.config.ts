@@ -12,7 +12,7 @@ export default ({
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432, // 👈 pretvori string u broj
     user: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "postgres",
-    database: process.env.DB_NAME || "recipesdb",
+    database: process.env.DB_NAME || "srpski",
     ssl: false,
   },
 

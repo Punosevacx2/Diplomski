@@ -9,7 +9,7 @@ import { QueryComponent } from './component/query.component/query.component';
 import { VectorComponent } from './component/vector.component/vector.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: SearchComponent },
   { path: 'search', component: SearchComponent },
   { path: 'recipe/:collectionName/:id', component: RecipeDetailComponent },
   { path: 'index', component: IndexComponent },

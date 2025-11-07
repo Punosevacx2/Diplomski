@@ -19,7 +19,7 @@ export const appConfig = {
   providers: [
     importProvidersFrom(HttpClientModule), // za HTTP servise
     provideRouter([
-      { path: '', component: HomeComponent },
+      { path: '', component: SearchComponent },
       { path: 'search', component: SearchComponent },
       { path: 'recipe/:collectionName/:id', component: RecipeDetailComponent },
       { path: 'index', component: IndexComponent },

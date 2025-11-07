@@ -6,7 +6,7 @@ dotenv.config();
 
 // konekcija za postgresql bazom 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/recipesdb",
+  connectionString: process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/srpski",
 });
 
 export const db = drizzle(pool);

@@ -1,75 +1,119 @@
-import axios from "axios";
-import dotenv from "dotenv";
+// src/scripts/popunipg.ts
 import { Client } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { recipes } from "../database/schema/schemapg.ts"; 
+import { translateBatchOpenAI } from "./translateOpenAI.ts";
+import { recipes } from "../database/schema/schemapg.ts";
 
-dotenv.config();
-//popunjavanje postgresql baze 
+// HARD-CODED konekcije:
+const READ_DB  = "postgres://postgres:postgres@localhost:5432/recipesdb?sslmode=disable";      // izvor
+const WRITE_DB = "postgres://postgres:postgres@localhost:5432/srpski?sslmode=disable";   // cilj
 
-// Seed datas in PostgreSQL database
-const API_KEY = process.env.SPOONACULAR_API_KEY;
-const BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
+type SrcRow = {
+  id: number;
+  title: string | null;
+  description: string | null;
+  ingredients: string | null;
+};
 
-// Conecting to Database
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-});
-const db = drizzle(client);
+const READ_BATCH   = 500;
+const TRANS_BATCH  = 10;   // manji batch = bolji progres/logovi
+const INSERT_CHUNK = 500;
 
-// remove hmtl tags from text 
-function stripHtmlTags(text:any) {
-  return text.replace(/<[^>]*>/g, ''); // uklanja sve HTML tagove
-}
+async function main() {
+  // source PG (plain pg)
+  const src = new Client({ connectionString: READ_DB });
+  await src.connect();
+  console.log("Connected → source (recipesdb)");
 
-// take data from API
-async function getRecipesBatch(offset: number, number: number = 100) {
-  try {
-    const response = await axios.get(BASE_URL, {
-      params: {
-        apiKey: API_KEY,
-        number,
-        offset,
-        addRecipeInformation: true, 
-      },
-    });
+  // target PG + Drizzle
+  const dstClient = new Client({ connectionString: WRITE_DB });
+  await dstClient.connect();
+  const db = drizzle(dstClient);
+  console.log("Connected → target (recipesdbsrb)");
 
-    return response.data.results.map((r: any) => ({
-      title: r.title || "No title",
-      description: stripHtmlTags(r.summary) || "No description", //funkcija koja cisti text od html tagova
-      ingredients: r.extendedIngredients
-        ? r.extendedIngredients.map((ing: any) => ing.original).join(", ")
-        : "",
-    }));
-  } catch (error: any) {
-    console.error("Greška prilikom dohvata recepata:", error.response?.data || error.message);
-    return [];
-  }
-}
+  // (opciono) kreiraj tabelu ako ne postoji
+  await dstClient.query(`
+    CREATE TABLE IF NOT EXISTS recipes (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      ingredients TEXT
+    );
+  `);
 
-// Main function 
-async function seedRecipes() {
-  await client.connect();
-  console.log("Connected to database");
+  // pročitaj sve iz izvora
+  const { rows } = await src.query<SrcRow>(`
+    SELECT id, title, description, ingredients
+    FROM recipes
+    ORDER BY id;
+  `);
 
-  const totalRecipes = 300;
-  const batchSize = 100;
-  let allRecipes: any[] = [];
-
-  for (let offset = 0; offset < totalRecipes; offset += batchSize) {
-    console.log(`Fetching recipes batch ${offset}-${offset + batchSize}`);
-    const batch = await getRecipesBatch(offset, batchSize);
-    allRecipes.push(...batch);
+  if (!rows.length) {
+    console.log("Nema zapisa u izvornoj tabeli.");
+    await src.end(); await dstClient.end();
+    return;
   }
 
-  console.log(`Inserting ${allRecipes.length} recipes into database...`);
-  await db.insert(recipes).values(allRecipes);
-  console.log("Done!");
+  console.log(`Za obradu: ${rows.length} recepata`);
 
-  await client.end();
+  const srRows: { title: string; description: string; ingredients: string | null }[] = [];
+
+  for (let i = 0; i < rows.length; i += TRANS_BATCH) {
+    const chunk = rows.slice(i, i + TRANS_BATCH);
+
+    const titles       = chunk.map(r => r.title ?? "");
+    const descriptions = chunk.map(r => r.description ?? "");
+
+    console.log(`→ Prevodi batch ${i}-${i + chunk.length - 1} (size=${chunk.length})`);
+
+    // 1) PREVOD NASLOVA
+    const t0 = Date.now();
+    const titlesSR = await translateBatchOpenAI(titles);
+    const t1 = Date.now();
+
+    // 2) PREVOD OPISA
+    const descSR = await translateBatchOpenAI(descriptions);
+    const t2 = Date.now();
+
+    console.log(`✓ Naslovi:  ${( (t1 - t0)/1000 ).toFixed(1)}s, Opisi: ${ ( (t2 - t1)/1000 ).toFixed(1)}s`);
+
+    // sanity sample za prvi batch
+    if (i === 0) {
+      console.log("Sample TITLE EN:", titles[0]);
+      console.log("Sample TITLE SR:", titlesSR[0]);
+      console.log("Sample DESC  EN:", descriptions[0]);
+      console.log("Sample DESC  SR:", descSR[0]);
+    }
+
+    for (let j = 0; j < chunk.length; j++) {
+      const r = chunk[j]!;
+      const titleSr = (titlesSR[j] || r.title || "").slice(0, 255);
+      const descSr  = (descSR[j]   || r.description || "");
+
+      srRows.push({
+        title: titleSr,
+        description: descSr,
+        ingredients: r.ingredients ?? null,
+      });
+    }
+
+    console.log(`Prevedeno ukupno: ${srRows.length}/${rows.length}`);
+  }
+
+  // INSERT u ciljnu bazu (chunk-ovi)
+  console.log(`Upis u recipesdbsrb.public.recipes: ${srRows.length} redova…`);
+  for (let i = 0; i < srRows.length; i += INSERT_CHUNK) {
+    const chunk = srRows.slice(i, i + INSERT_CHUNK);
+    await db.insert(recipes).values(chunk);
+    console.log(`Upisano: ${Math.min(i + INSERT_CHUNK, srRows.length)}/${srRows.length}`);
+  }
+
+  console.log("✅ Gotovo.");
+  await src.end();
+  await dstClient.end();
 }
 
-seedRecipes().catch((err) => {
+main().catch(err => {
   console.error(err);
   process.exit(1);
 });

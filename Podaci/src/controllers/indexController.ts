@@ -4,7 +4,7 @@ import { milvusClient, collectionName,createCollection } from '../database/schem
 
 export  const createMilvusIndex = async (req: Request, res: Response) =>  {
   try {
-    const { fieldName, indexName, collectionName , metricType = "L2", indexType="IVF_FLAT" } = req.body;
+    const { fieldName, indexName, collectionName , metricType = "COSINE", indexType="IVF_FLAT" } = req.body;
     console.log(req.body);
 
     await milvusClient.releaseCollection({ collection_name: collectionName });
@@ -19,7 +19,7 @@ export  const createMilvusIndex = async (req: Request, res: Response) =>  {
       }
       );
 
-    await milvusClient.loadCollection({ collection_name: "Proba1" });
+    await milvusClient.loadCollection({ collection_name: collectionName });
 
     console.log(`✅ Index "${indexName}" created for collection "${collectionName}"`);
 

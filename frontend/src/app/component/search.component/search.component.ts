@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { MilvusService } from '../../../services/services';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+
+type Mode = 'semantic' | 'fulltext' | 'hybrid';
 
 @Component({
   selector: 'app-search',
@@ -16,28 +17,26 @@ export class SearchComponent {
   loading = false;
   error: string | null = null;
   results: any[] = [];
+  activeMode: Mode | null = null;
 
-  // Parametri koje korisnik može menjati
-  params = {
-    text: '',
-    topK: 5,
-    collectionName: 'Proba1',
-    metricType: 'COSINE'
-  };
+  // 🔧 Bitno: ovo fali u tvojoj klasi
+  query = '';
 
-  indexParamsInput = '{"nprobe": 128}'; // korisnik može uneti svoj JSON string
+  constructor(private milvusService: MilvusService, private router: Router) {}
 
-  constructor(private milvusService: MilvusService,private router: Router) {}
-
-openRecipeDetail(recipe: any): void {
-  if (recipe.id) {
-    this.router.navigate(['/recipe',this.params.collectionName, recipe.id]);
+  openRecipeDetail(recipe: any): void {
+    if (recipe?.id) {
+      this.router.navigate(['/recipe', recipe.id]); // prilagodi rutu po potrebi
+    }
   }
-}
 
+  onEnter(): void {
+    this.run(this.activeMode || 'semantic');
+  }
 
-  onSearch(): void {
-    if (!this.params.text.trim()) {
+  run(mode: Mode): void {
+    const text = (this.query || '').trim();
+    if (!text) {
       this.error = 'Unesite tekst za pretragu.';
       return;
     }
@@ -45,37 +44,33 @@ openRecipeDetail(recipe: any): void {
     this.loading = true;
     this.error = null;
     this.results = [];
+    this.activeMode = mode;
 
-    let parsedIndexParams: any = {};
-    try {
-      parsedIndexParams = JSON.parse(this.indexParamsInput);
-    } catch (e) {
-      this.error = 'Neispravan JSON u Index Params polju.';
-      this.loading = false;
-      return;
-    }
+    // 🔧 Sada šaljemo string, jer servis očekuje string
+    const req$ =
+      mode === 'semantic'
+        ? this.milvusService.searchSemantic(text)
+        : mode === 'fulltext'
+        ? this.milvusService.searchFulltext(text)
+        : this.milvusService.searchHybrid(text);
 
-    const body = {
-      ...this.params,
-      indexParams: parsedIndexParams
-    };
-
-    console.log('📤 Šaljem na backend:', body);
-
-    this.milvusService.searchVectors(body).subscribe({
-      next: (res) => {
-        console.log('📥 Odgovor sa backenda:', res);
-        this.results = res.results || res.data || [];
+    req$.subscribe({
+      next: (res: any) => {
+        this.results = res?.results ?? res?.data ?? res ?? [];
         this.loading = false;
       },
-      error: (err) => {
-        console.error('❌ Greška:', err);
+      error: (err: any) => {
+        console.error(err);
         this.error = 'Došlo je do greške prilikom pretrage.';
         this.loading = false;
       }
     });
   }
 
-
-
+  // Lep prikaz % i kad score nije u [0,1]
+  scorePct(r: any): number {
+    const s = Number(r?.score ?? 0);
+    if (Number.isNaN(s)) return 0;
+    return s <= 1 ? s * 100 : Math.min(100, (s / (s + 10)) * 100);
+  }
 }
