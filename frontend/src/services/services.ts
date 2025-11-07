@@ -12,20 +12,21 @@ export class MilvusService {
 
   constructor(private http: HttpClient) {}
 
-searchSemantic(text:string){
- return this.http.post(`${this.baseUrl}/search`, {text});
+
+searchFulltext(body: {
+    text: string;}){
+ return this.http.post(`${this.baseUrl}/fulltext`, body);
 }
 
-searchFulltext(text:string){
- return this.http.post(`${this.baseUrl}/search`, text);
+searchHybrid(body: {
+    text: string;
+    topK?: number;
+    collectionName?: string;
+    metricType?: string;
+    indexParams?: any;
+    filter?: string;}){
+ return this.http.post(`${this.baseUrl}/hybrid-search`, body);
 }
-
-searchHybrid(text:string){
- return this.http.post(`${this.baseUrl}/search`, text);
-}
-
-
-
 
 
   // 🏗️ 1. Kreiraj kolekciju
@@ -39,10 +40,10 @@ searchHybrid(text:string){
   }
 
   // 🔍 3. Semantička pretraga
-  searchVectors(body: {
+  searchSemantic(body: {
     text: string;
     topK?: number;
-    collectionName: string;
+    collectionName?: string;
     metricType?: string;
     indexParams?: any;
   }): Observable<any> {

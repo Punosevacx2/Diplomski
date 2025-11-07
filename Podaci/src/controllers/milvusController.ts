@@ -6,7 +6,7 @@ import { ConsistencyLevelEnum } from "@zilliz/milvus2-sdk-node";
 
 export async function searchFullText(req: Request, res: Response) {
   try {
-    const q = (req.query.q as string) || (req.body?.q as string);
+    const q = (req.query.text as string) || (req.body?.text as string);
     if (!q?.trim()) {
       return res.status(400).json({ error: "Query parameter 'q' is required." });
     }
@@ -114,7 +114,7 @@ function rrfFuse(dense: Hit[], sparse: Hit[], k = 60, topK = 5): Hit[] {
 
 export async function searchHybrid(req: Request, res: Response) {
   try {
-    const q = (req.body?.q ?? req.query?.q ?? "").toString().trim();
+    const q = (req.body?.text ?? req.query?.text ?? "").toString().trim();
     if (!q) return res.status(400).json({ error: "Query 'q' is required." });
 
     const coll =

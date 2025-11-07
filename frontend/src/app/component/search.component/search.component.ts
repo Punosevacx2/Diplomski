@@ -47,12 +47,13 @@ export class SearchComponent {
     this.activeMode = mode;
 
     // 🔧 Sada šaljemo string, jer servis očekuje string
+    const body = {"text": text};
     const req$ =
       mode === 'semantic'
-        ? this.milvusService.searchSemantic(text)
+        ? this.milvusService.searchSemantic(body)
         : mode === 'fulltext'
-        ? this.milvusService.searchFulltext(text)
-        : this.milvusService.searchHybrid(text);
+        ? this.milvusService.searchFulltext(body)
+        : this.milvusService.searchHybrid(body);
 
     req$.subscribe({
       next: (res: any) => {

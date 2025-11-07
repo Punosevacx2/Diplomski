@@ -1,79 +1,12 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { MilvusService } from '../../../services/services';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [RouterLink],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
-loading = false;
-  error: string | null = null;
-  results: any[] = [];
 
-  // Parametri koje korisnik može menjati
-  params = {
-    text: '',
-    topK: 5,
-    collectionName: 'Proba1',
-    metricType: 'COSINE',
-    filter: 'id>10000'
-  };
-
-  indexParamsInput = '{"nprobe": 128}'; // korisnik može uneti svoj JSON string
-
-  constructor(private milvusService: MilvusService,private router: Router) {}
-
-openRecipeDetail(recipe: any): void {
-  if (recipe.id) {
-    // navigacija ka ruti koja prikazuje recipes-component
-    this.router.navigate(['/recipe', recipe.id]);
-  }
-}
-
-
-  onSearch(): void {
-    if (!this.params.text.trim()) {
-      this.error = 'Unesite tekst za pretragu.';
-      return;
-    }
-
-    this.loading = true;
-    this.error = null;
-    this.results = [];
-
-    let parsedIndexParams: any = {};
-    try {
-      parsedIndexParams = JSON.parse(this.indexParamsInput);
-    } catch (e) {
-      this.error = 'Neispravan JSON u Index Params polju.';
-      this.loading = false;
-      return;
-    }
-
-    const body = {
-      ...this.params,
-      indexParams: parsedIndexParams
-    };
-
-    console.log('📤 Šaljem na backend:', body);
-
-    this.milvusService.searchVectors(body).subscribe({
-      next: (res) => {
-        console.log('📥 Odgovor sa backenda:', res);
-        this.results = res.results || res.data || [];
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('❌ Greška:', err);
-        this.error = 'Došlo je do greške prilikom pretrage.';
-        this.loading = false;
-      }
-    });
-  }
 }
