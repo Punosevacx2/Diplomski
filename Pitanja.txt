@@ -26,3 +26,15 @@ pitanje sta je trebalo bold a sta italik da se pise
 7.2. Ограничења
 7.3. Могућа унапређења
 7.4. Лична запажања
+
+hnsw
+{
+  "M": 16,
+  "efConstruction": 200
+}
+
+ivf_pq {
+  "nlist": 2048,
+  "m": 16,
+  "nbits": 8
+}
