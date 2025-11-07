@@ -16,21 +16,42 @@ export class RecipeDetailComponent implements OnInit {
   recipe: any = null;
   loading = false;
   error: string | null = null;
+  message: string | null=null;
 
   constructor(private route: ActivatedRoute, private milvusService: MilvusService) {}
 
   ngOnInit(): void {
+    const collectionName = this.route.snapshot.paramMap.get('collectionName');
     const id = this.route.snapshot.paramMap.get('id');
     console.log(id);
-    if (id) {
-      this.fetchRecipe(id);
+    if (id && collectionName) {
+      this.fetchRecipe(id,collectionName);
     }
   }
+  onDrop(){
+    const id = this.route.snapshot.paramMap.get('id');
+    const collectionName = this.route.snapshot.paramMap.get('collectionName');
+    if (id && collectionName) {
+      
+    this.milvusService.deleteVector(Number(id),collectionName).subscribe({
+    next: (res) => {
+      this.message = `✅ Vector "${id}" uspešno obrisan!`;
+      this.loading = false;
 
-  fetchRecipe(id: string): void {
+    },
+    error: (err) => {
+      this.error = '❌ Greška pri brisanju indeksa.';
+      console.error(err);
+      this.loading = false;
+    }
+  
+  });
+    }
+  }
+  fetchRecipe(id: string, collectionName: string): void {
   this.loading = true;
   console.log(id);
-  this.milvusService.searchById(Number(id)).subscribe({
+  this.milvusService.searchById(id,collectionName).subscribe({
     next: (res: any) => {
       console.log(res.data);
       if (res.data && res.data.length > 0) {

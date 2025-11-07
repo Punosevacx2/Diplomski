@@ -18,12 +18,12 @@ loading = false;
   results: any[] = [];
 
   // Parametri koje korisnik može menjati
-  params = {
+  paramshybrid = {
     text: '',
     topK: 5,
-    collectionName: 'Proba1',
+    collectionName: 'Proba5',
     metricType: 'COSINE',
-    filter: 'id>10000'
+    filter: 'id > 10000'
   };
 
   indexParamsInput = '{"nprobe": 128}'; // korisnik može uneti svoj JSON string
@@ -32,14 +32,13 @@ loading = false;
 
 openRecipeDetail(recipe: any): void {
   if (recipe.id) {
-    // navigacija ka ruti koja prikazuje recipes-component
-    this.router.navigate(['/recipe', recipe.id]);
+     this.router.navigate(['/recipe',this.paramshybrid.collectionName, recipe.id]);
   }
 }
 
 
   onSearch(): void {
-    if (!this.params.text.trim()) {
+    if (!this.paramshybrid.text.trim()) {
       this.error = 'Unesite tekst za pretragu.';
       return;
     }
@@ -56,15 +55,16 @@ openRecipeDetail(recipe: any): void {
       this.loading = false;
       return;
     }
-
+    console.log("Parametri za hybridni");
+    console.log(this.paramshybrid);
     const body = {
-      ...this.params,
+      ...this.paramshybrid,
       indexParams: parsedIndexParams
     };
 
     console.log('📤 Šaljem na backend:', body);
 
-    this.milvusService.searchVectors(body).subscribe({
+    this.milvusService.searchVectorsHybrid(body).subscribe({
       next: (res) => {
         console.log('📥 Odgovor sa backenda:', res);
         this.results = res.results || res.data || [];

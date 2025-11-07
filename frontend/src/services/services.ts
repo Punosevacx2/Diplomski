@@ -18,7 +18,7 @@ export class MilvusService {
   }
 
   // 📥 2. Ubaci vektor
-  insertVector(data: { id: number; title: string; description: string }): Observable<any> {
+  insertVector(data: { title: string; description: string; collectionName:string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/insert`, data);
   }
 
@@ -52,8 +52,8 @@ export class MilvusService {
   }
 
   // 🗑️ 6. Brisanje vektora po ID-u
-  deleteVector(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/delete/${id}`);
+  deleteVector(id: number, collectionName:string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/delete/${collectionName}/${id}`);
   }
 
   // 🧱 7. Kreiraj indeks
@@ -95,12 +95,11 @@ export class MilvusService {
     return this.http.delete(`${this.baseUrl}/collection/${name}`);
   }
 
-searchById(id: number): Observable<any> {
+searchById(id: string, collectionName: String): Observable<any> {
   const body = {
     id,
-    collectionName: 'Proba1'
+    collectionName
   };
-
   return this.http.post(`${this.baseUrl}/getById`, body);
 }
 

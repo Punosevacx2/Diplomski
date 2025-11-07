@@ -13,6 +13,7 @@ export const insertVector = async (req: Request, res: Response) => {
       collection_name: collectionName || collectionName,
       fields_data: [{ vector, title, description}],  // polja u milvus bazi 
     });
+    console.log("Pozvano kreiranje recepta");
     res.json(result);
   } catch (err) {
     console.error(err);
@@ -58,7 +59,7 @@ export const searchVectors = async (req: Request, res: Response) => {
 
 export const searchVectorshybrid = async (req: Request, res: Response) => {
   try {
-    const { text, topK = 5, collectionName , metricType = "L2", indexParams = { nprobe: 128 }, filter="id>1000" } = req.body;
+    const { text, topK = 5, collectionName , metricType = "L2", indexParams = { nprobe: 128 }, filter="id > 1000" } = req.body;
     if (!text) {
       return res.status(400).json({ message: "Text is required in the body" });
     } 
@@ -70,7 +71,7 @@ export const searchVectorshybrid = async (req: Request, res: Response) => {
   collection_name: collectionName,
   vector: vector,
   filter: filter,  // ⬅️ scalar filter deo
-  output_fields: ["title", "description",],  
+  output_fields: ["title", "description","id"],  
   metric_type: metricType,       // polja koja želiš da dobiješ
   limit: topK,                                       // broj rezultata
   params: { nprobe: 128 },                         // parametri pretrage
@@ -86,12 +87,11 @@ export const searchVectorshybrid = async (req: Request, res: Response) => {
 
 export const queryFilterRoute = async (req: Request, res: Response) => {
   try {
-    const { collectionName, filter = "id>1000" } = req.body;
+    const { collectionName, filter = "id > 1000" } = req.body;
 
     if (!collectionName) {
       return res.status(400).json({ message: "collectionName is required in the body" });
     }
-
     const result = await milvusClient.query({
       collection_name: collectionName,
       expr: filter,
@@ -139,7 +139,7 @@ export async function searchByIdRoute(req: Request, res: Response) {
 export async function searchById(id: number, collectionName: string) {
   return milvusClient.query({
     collection_name: collectionName,
-    expr: `id in [${id}]`,
+    expr: `id == ${id}`,
     output_fields: ["id", "title", "description"]
   });
 }

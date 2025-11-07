@@ -31,8 +31,7 @@ export class SearchComponent {
 
 openRecipeDetail(recipe: any): void {
   if (recipe.id) {
-    // navigacija ka ruti koja prikazuje recipes-component
-    this.router.navigate(['/recipe', recipe.id]);
+    this.router.navigate(['/recipe',this.params.collectionName, recipe.id]);
   }
 }
 
@@ -76,4 +75,7 @@ openRecipeDetail(recipe: any): void {
       }
     });
   }
+
+
+
 }

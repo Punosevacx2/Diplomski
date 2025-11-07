@@ -4,22 +4,22 @@
   <form (ngSubmit)="onSearch()" class="search-form">
     <div class="form-group">
       <label>Tekst za pretragu:</label>
-      <input type="text" [(ngModel)]="params.text" name="text" placeholder="Unesite tekst..." required />
+      <input type="text" [(ngModel)]="paramshybrid.text" name="text" placeholder="Unesite tekst..." required />
     </div>
 
     <div class="form-group">
       <label>Broj rezultata (topK):</label>
-      <input type="number" [(ngModel)]="params.topK" name="topK" min="1" placeholder="npr. 5" />
+      <input type="number" [(ngModel)]="paramshybrid.topK" name="topK" min="1" placeholder="npr. 5" />
     </div>
 
     <div class="form-group">
       <label>Naziv kolekcije:</label>
-      <input type="text" [(ngModel)]="params.collectionName" name="collectionName" placeholder="npr. Proba1" required />
+      <input type="text" [(ngModel)]="paramshybrid.collectionName" name="collectionName" placeholder="npr. Proba1" required />
     </div>
 
     <div class="form-group">
       <label>Metric Type:</label>
-      <select [(ngModel)]="params.metricType" name="metricType">
+      <select [(ngModel)]="paramshybrid .metricType" name="metricType">
         <option value="L2">L2 (Euclidean)</option>
         <option value="COSINE">Cosine</option>
         <option value="IP">Inner Product</option>
@@ -33,7 +33,7 @@
 
     <div class="form-group">
       <label>Filter (filter):</label>
-      <input type="text" [(ngModel)]="params.filter" name="filter"  placeholder="id>10000" />
+      <input type="text" [(ngModel)]="paramshybrid.filter" name="filter"  placeholder="id > 10000" />
     </div>
 
     <button type="submit" [disabled]="loading">Pretraži</button>
@@ -59,5 +59,4 @@
     </div>
   </div>
 </div>
-
 </div>
