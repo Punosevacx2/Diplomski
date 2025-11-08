@@ -2,6 +2,9 @@ import type { Request, Response } from 'express';
 import { milvusClient, collectionName,createCollection } from '../database/schema/shemamilvus.ts';
 import { getLocalEmbedding } from "../embedding/localEmbedding.ts";
 import { ConsistencyLevelEnum } from "@zilliz/milvus2-sdk-node";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 
 export async function searchFullText(req: Request, res: Response) {
@@ -47,7 +50,7 @@ export async function searchFullText(req: Request, res: Response) {
 export const searchVectors = async (req: Request, res: Response) => {
   try {
     console.log("Pozvan je endpoint searchVector");
-    const { text, topK = 5, collectionName="test" , metricType = "IP", indexParams = { nprobe: 128 } } = req.body;
+    const { text, topK = 5, collectionName="test" , metricType = process.env.METRIC_TYPE, indexParams = { nprobe: 128 } } = req.body;
     if (!text) {
       return res.status(400).json({ message: "Text is required in the body" });
     }
@@ -123,7 +126,7 @@ export async function searchHybrid(req: Request, res: Response) {
       "test";
 
     const topK = Number(req.body?.topK ?? req.query?.k ?? 5);
-    const metricType = (req.body?.metricType as "IP" | "COSINE" | "L2") || "IP";
+    const metricType = (req.body?.metricType as "IP" | "COSINE" | "L2") || process.env.METRIC_TYPE;
     const nprobe = Number(req.body?.nprobe ?? 128);
     const dropRatio = Number(req.body?.dropRatio ?? 0.0);
     const rrfK = Number(req.body?.rrfK ?? 60);

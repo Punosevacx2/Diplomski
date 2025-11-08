@@ -6,8 +6,7 @@ export const milvusClient = new MilvusClient({
   address: `${process.env.MILVUS_HOST || '127.0.0.1'}:${process.env.MILVUS_PORT || 19530}`,
 });
 
-// Bezbedan fallback
-export const collectionName = (process.env.COLLECTION_NAME && process.env.COLLECTION_NAME.trim()) || "Proba6";
+export const collectionName = (process.env.COLLECTION_NAME && process.env.COLLECTION_NAME.trim()) || "test";
 
 export async function createCollection(collName: string) {
   const exists = await milvusClient.hasCollection({ collection_name: collName });
@@ -20,22 +19,9 @@ export async function createCollection(collName: string) {
     collection_name: collName,
     fields: [
       { name: 'id', data_type: DataType.Int64, is_primary_key: true, autoID: true },
-
-      // → PROMENI dim: 768 ako koristiš nomic-embed-text-v1, 384 za MiniLM-L6-v2
       { name: 'vector', data_type: DataType.FloatVector, dim: 768 },
-
       { name: 'title', data_type: DataType.VarChar, max_length: 256 },
-
-      {
-        name: 'description',
-        data_type: DataType.VarChar,
-        max_length: 10000,
-        enable_analyzer: true,
-        enable_match: true,
-        // (opciono, ali korisno)
-        // analyzer_params: { tokenizer: "icu", filters: ["lowercase"] }
-      },
-
+      { name: 'description',data_type: DataType.VarChar,max_length: 10000,enable_analyzer: true,enable_match: true,},
       { name: 'text_sparse', data_type: DataType.SparseFloatVector },
     ],
 
@@ -51,8 +37,7 @@ export async function createCollection(collName: string) {
     ],
 
     index_params: [
-      { field_name: 'vector', index_type: 'AUTOINDEX', metric_type: 'IP' },
-
+      { field_name: 'vector', index_type: 'AUTOINDEX', metric_type: process.env.METRIC_TYPE || "COSINE" },
       {
         field_name: 'text_sparse',
         index_type: 'SPARSE_INVERTED_INDEX',

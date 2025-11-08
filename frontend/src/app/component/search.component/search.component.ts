@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -13,7 +13,7 @@ type Mode = 'semantic' | 'fulltext' | 'hybrid';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit{
   loading = false;
   error: string | null = null;
   results: any[] = [];
@@ -23,6 +23,21 @@ export class SearchComponent {
   query = '';
 
   constructor(private milvusService: MilvusService, private router: Router) {}
+
+ngOnInit(): void {
+  const body= {"text": "Recepti"}
+    this.milvusService.searchSemantic(body).subscribe({
+      next: (res: any) => {
+        this.results = res?.results ?? res?.data ?? res ?? [];
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error(err);
+        this.error = 'Došlo je do greške prilikom pretrage.';
+        this.loading = false;
+      }
+    });; // opcionalno: listaj sve kolekcije na startu
+  }
 
   openRecipeDetail(recipe: any): void {
     if (recipe?.id) {
