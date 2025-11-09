@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { insertVector,searchVectors,deleteVector,searchHybrid,queryFilterRoute,searchByIdRoute, searchFullText } from "../controllers/milvusController.ts";
+import { insertVector, deleteVector } from "../controllers/vectorController.ts"
+import { searchVectors,searchHybrid,queryFilterRoute,searchByIdRoute, searchFullText } from "../controllers/milvusController.ts";
 import {createMilvusCollection,listCollections,describeCollection,dropCollection} from "../controllers/collectionController.ts"
 import {dropMilvusIndex,listMilvusIndexes,createMilvusIndex} from "../controllers/indexController.ts"
 
