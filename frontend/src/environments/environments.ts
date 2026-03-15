@@ -1,4 +1,4 @@
 export const environment = {
   //production: false,
-  apiUrl: 'http://localhost:3000/api/milvus'       // URL od backenda
+  apiUrl: 'http://localhost:8001/api/milvus'       // URL od backenda
 };

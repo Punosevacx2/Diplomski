@@ -25,7 +25,7 @@ searchHybrid(body: {
     metricType?: string;
     indexParams?: any;
     filter?: string;}){
- return this.http.post(`${this.baseUrl}/hybrid-search`, body);
+ return this.http.post(`${this.baseUrl}/hybrid`, body);
 }
 
 
@@ -48,7 +48,7 @@ searchHybrid(body: {
     indexParams?: any;
   }): Observable<any> {
     console.log(body);
-    return this.http.post(`${this.baseUrl}/search`, body);
+    return this.http.post(`${this.baseUrl}/semantic`, body);
   }
 
   // ⚡ 4. Hibridna pretraga
