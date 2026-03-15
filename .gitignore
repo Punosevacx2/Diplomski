@@ -37,3 +37,48 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+backend.zip
+Podaci/volumes/
+backend.zip
+Podaci/volumes/
+
+
+*.csv
+*.docx
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+.env
+.venv/
+
+# Environment varijable
+.env
+.env.local
+.env.*.local
+
+# Milvus volumes
+volumes/
+
+# Logs
+*.log
+logs/
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Distribution
+dist/
+build/
+*.egg-info/
+*.zip
