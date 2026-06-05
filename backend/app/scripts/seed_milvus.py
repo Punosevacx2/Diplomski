@@ -11,7 +11,7 @@ load_dotenv()
 MILVUS_HOST = os.getenv("MILVUS_HOST", "localhost")
 MILVUS_PORT = os.getenv("MILVUS_PORT", "19530")
 COLLECTION_NAME = "books"
-CSV_PATH = os.getenv("CSV_PATH", "app/books_dataset.csv")
+CSV_PATH = "app/services/books_dataset.csv"
 BATCH_SIZE = 100  # ubacuje po 100 knjiga odjednom
 
 
@@ -37,7 +37,7 @@ def create_collection():
         FieldSchema(name="published_year", dtype=DataType.FLOAT),
         FieldSchema(name="average_rating", dtype=DataType.FLOAT),
         FieldSchema(name="num_pages",    dtype=DataType.FLOAT),
-        FieldSchema(name="vector",       dtype=DataType.FLOAT_VECTOR,  dim=384),
+        FieldSchema(name="vector",       dtype=DataType.FLOAT_VECTOR,  dim=768),
     ]
 
     schema = CollectionSchema(fields, description="Books collection")

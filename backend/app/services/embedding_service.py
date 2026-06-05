@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True,local_files_only=True )
 
 def build_book_text(book: dict) -> str:
     return " ".join([
@@ -10,5 +10,5 @@ def build_book_text(book: dict) -> str:
         str(book.get("description", ""))
     ])
 
-def get_embedding(text: str) -> list[float]:
-    return model.encode(text).tolist()
+def get_embedding(text: str, task: str = "search_document") -> list[float]:
+    return model.encode(f"{task}: {text}").tolist()
